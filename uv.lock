@@ -35,7 +35,7 @@ dependencies = [
     { name = "pyyaml" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "pylint" },
     { name = "pytest" },
@@ -47,11 +47,14 @@ requires-dist = [
     { name = "numpy", specifier = ">=1.26" },
     { name = "opencv-python", specifier = ">=4.8" },
     { name = "pillow", specifier = ">=10.0" },
-    { name = "pylint", marker = "extra == 'dev'", specifier = ">=3.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pylint", specifier = ">=3.0" },
+    { name = "pytest", specifier = ">=8.0" },
+]
 
 [[package]]
 name = "colorama"

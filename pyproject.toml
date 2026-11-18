@@ -16,7 +16,7 @@ dependencies = [
     "matplotlib>=3.8",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest>=8.0",
     "pylint>=3.0",

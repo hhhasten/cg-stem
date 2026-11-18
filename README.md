@@ -45,12 +45,21 @@ Python 3.10 або новіше.
 
 ## Встановлення
 
+Проєкт використовує `uv`.
+
 ```
-pip install -e ".[dev]"
+uv sync
 ```
 
-Пакет встановлюється в режимі розробки, тому правки в `src/` діють одразу.
-Залежності задані в `pyproject.toml`.
+Команда створює `.venv`, встановлює залежності та сам пакет у режимі розробки.
+Залежності задані в `pyproject.toml`, точні версії в `uv.lock`.
+
+Запуск команд у цьому середовищі:
+
+```
+uv run python scripts/check_dataset.py
+uv run pytest
+```
 
 ## Запуск
 
@@ -67,7 +76,7 @@ pip install -e ".[dev]"
 Перевірка вибірки:
 
 ```
-python scripts/check_dataset.py
+uv run python scripts/check_dataset.py
 ```
 
 ## Документація
