@@ -1,0 +1,36 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+
+# --- Project output ---
+# результаты прогонов не коммитим, кроме .gitkeep
+out/images/*
+out/stages/*
+out/metrics/*
+!out/**/.gitkeep
+
+# --- Dataset ---
+# сырые изображения выборки держим локально; в репозитории — манифест и ссылки
+data/raw/*
+!data/raw/.gitkeep
+data/reference/*
+!data/reference/.gitkeep
+
+# --- Reports (бинарники) ---
+docs/report/*.pdf
+docs/report/*.docx
