@@ -67,7 +67,28 @@ uv run pytest
 
 ## Запуск
 
-Розділ заповнюється після реалізації CLI.
+Одна команда обробляє всю вибірку за конфігурацією `configs/methods.yaml`:
+
+```
+uv run cgstem
+```
+
+Параметри змінюються без правки коду:
+
+```
+uv run cgstem --methods median,clahe --set median.sizes=[3,7]
+uv run cgstem --limit 5
+```
+
+Аргументи: `--manifest`, `--config`, `--out`, `--limit`, `--methods`,
+`--set METHOD.KEY=VALUE`.
+
+Результати:
+
+- `out/images/<метод>/<варіант>/` — фінальні зображення;
+- `out/stages/<стадія>/<метод>/<варіант>/` — проміжні результати стадій;
+- `out/metrics/metrics.csv` — метрики кожного знімка;
+- `out/metrics/summary.csv` — середні значення за методом.
 
 ## Дані
 

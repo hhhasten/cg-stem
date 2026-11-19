@@ -1,0 +1,14 @@
+median:
+  sizes: [3, 5, 7]
+gaussian:
+  size: 5
+  sigma: 1.0
+clahe:
+  clip_limit: 2.0
+  grid: [8, 8]
+otsu: {}
+morphology:
+  size: 3
+glcm:
+  distances: [1, 2, 3]
+  angles: [0, 45, 90, 135]

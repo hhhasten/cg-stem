@@ -22,6 +22,9 @@ dev = [
     "pylint>=3.0",
 ]
 
+[project.scripts]
+cgstem = "cgstem.cli.main:main"
+
 [tool.setuptools]
 package-dir = { "" = "src" }
 
