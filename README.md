@@ -90,5 +90,6 @@ uv run python scripts/check_dataset.py --manifest data/manifest.tsv
 ## Документація
 
 - [Технічне завдання](docs/tz.md)
+- [Метрики якості](docs/metrics.md)
 - [Правила роботи над репозиторієм](AGENTS.md)
 - [Журнал використання генеративного ШІ](META-USAGE.md)
