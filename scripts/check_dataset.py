@@ -1,13 +1,25 @@
-"""Перевірка вибірки зображень у data/raw."""
+"""Перевірка вибірки зображень."""
 
 from __future__ import annotations
 
+import argparse
 from collections import Counter
 from pathlib import Path
 
 from PIL import Image, UnidentifiedImageError
 
+from cgstem.dataset import read_manifest
+from cgstem.paths import repo_root
+
 IMAGE_SUFFIXES = {".bmp", ".png", ".jpg", ".jpeg", ".tif", ".tiff"}
+
+
+def parse_args() -> argparse.Namespace:
+    """Розбирає аргументи командного рядка."""
+    parser = argparse.ArgumentParser(description="Перевірка вибірки зображень")
+    parser.add_argument("--raw-dir", type=Path, default=Path("data/raw"))
+    parser.add_argument("--manifest", type=Path, default=None)
+    return parser.parse_args()
 
 
 def find_images(root: Path) -> list[Path]:
@@ -15,6 +27,12 @@ def find_images(root: Path) -> list[Path]:
     return sorted(
         path for path in root.rglob("*") if path.suffix.lower() in IMAGE_SUFFIXES
     )
+
+
+def images_from_manifest(manifest: Path, root: Path) -> list[Path]:
+    """Повертає перелік файлів, перелічених у маніфесті."""
+    entries = read_manifest(manifest)
+    return [root / entry.path for entry in entries]
 
 
 def describe(path: Path) -> tuple[str, str]:
@@ -57,11 +75,17 @@ def report(root: Path, images: list[Path], sizes: Counter, modes: Counter,
 
 def main() -> None:
     """Запускає перевірку вибірки."""
-    root = Path(__file__).resolve().parents[1] / "data" / "raw"
-    images = find_images(root)
+    args = parse_args()
+    root = repo_root()
+    if args.manifest is not None:
+        images = images_from_manifest(root / args.manifest, root)
+    else:
+        images = find_images(root / args.raw_dir)
+
     if not images:
-        print(f"Зображень не знайдено: {root}")
+        print("Зображень не знайдено")
         return
+
     sizes, modes, broken = collect(images)
     report(root, images, sizes, modes, broken)
 

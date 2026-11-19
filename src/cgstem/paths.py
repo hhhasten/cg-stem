@@ -1,0 +1,10 @@
+"""Шляхи проєкту."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+
+def repo_root() -> Path:
+    """Повертає корінь репозиторію."""
+    return Path(__file__).resolve().parents[2]
