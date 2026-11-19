@@ -8,6 +8,7 @@ from numpy.lib.stride_tricks import sliding_window_view
 from cgstem.ops.conversion import to_uint8
 from cgstem.ops.convolution import convolve2d
 from cgstem.ops.kernels import gaussian_kernel
+from cgstem.ops.windows import check_window
 from cgstem.types import GrayImage
 
 
@@ -29,9 +30,3 @@ def gaussian_blur(image: GrayImage, size: int = 5,
     kernel = gaussian_kernel(size, sigma)
     smoothed = convolve2d(image.astype(np.float64), kernel)
     return to_uint8(smoothed)
-
-
-def check_window(size: int) -> None:
-    """Перевіряє, що розмір вікна непарний і не менший за три."""
-    if size < 3 or size % 2 == 0:
-        raise ValueError(f"Розмір вікна повинен бути непарним і >= 3, отримано {size}")
