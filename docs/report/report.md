@@ -1,11 +1,3 @@
-# ЗВІТ ЗІ STEM-ПРОЄКТУ
-
-**Тема:** аналіз та обробка зображень за допомогою класичних методів фільтрації,
-сегментації та аналізу текстур.
-
-> TODO: заповнити назву закладу, кафедру, дисципліну, дані виконавця,
-> керівника, місто і рік.
-
 ## АНОТАЦІЯ
 
 Розроблено програму для обробки та аналізу зображень відбитків пальців
@@ -28,18 +20,6 @@
 
 **Ключові слова:** обробка зображень, медіанний фільтр, гаусів фільтр,
 CLAHE, метод Оцу, морфологія, GLCM, PSNR, SSIM, SOCOFing.
-
-## ЗМІСТ
-
-1. Вступ
-2. Опис вибірки зображень
-3. Методи та програмна реалізація
-4. Результати
-5. Обговорення
-6. Висновки
-7. Список джерел
-8. Додаток А. Лістинг ключових функцій
-9. Додаток Б. Інструкція користувача
 
 ## 1 ВСТУП
 
@@ -236,6 +216,8 @@ uv run cgstem
 
 ### 4.2 Фільтрація
 
+**Таблиця 4.1. Середні метрики фільтрів відносно оригіналу**
+
 | Метод | MSE | PSNR, дБ | SSIM |
 |---|---|---|---|
 | Медіанний, вікно 3 | 2826.82 | 13.97 | 0.583 |
@@ -249,7 +231,26 @@ uv run cgstem
 фільтр змінює багато пікселів. Порівнювати ці числа треба між методами,
 а не з літературою.
 
+**Таблиця 4.2. Метрики фільтрів окремо для реальних і змінених знімків**
+
+| Метод | PSNR, реальні | SSIM, реальні | PSNR, змінені | SSIM, змінені |
+|---|---|---|---|---|
+| Медіанний, вікно 3 | 12.98 | 0.549 | 15.45 | 0.634 |
+| Медіанний, вікно 5 | 10.09 | 0.164 | 12.90 | 0.326 |
+| Медіанний, вікно 7 | 10.35 | 0.231 | 12.59 | 0.333 |
+| Гаусів, 5x5, sigma 1.0 | 13.01 | 0.493 | 15.40 | 0.591 |
+| CLAHE, clip 2.0, сітка 8x8 | 17.89 | 0.918 | 16.90 | 0.904 |
+
+На змінених знімках усі фільтри дають вищі PSNR і SSIM, ніж на реальних.
+Причина в тому, що стирання частини гребенів зменшує локальні перепади,
+і фільтр змінює меншу кількість контрастних пікселів. Це не означає кращу
+обробку: метрика лише фіксує менше відхилення від уже пошкодженого оригіналу.
+
+![Рисунок 4.1. Результати фільтрації реального знімка](img/filtering_comparison.png){width=14cm}
+
 ### 4.3 Сегментація та морфологія
+
+**Таблиця 4.3. Показники бінарних масок**
 
 | Метод | Частка переднього плану | Компонент | Площа найбільшої |
 |---|---|---|---|
@@ -257,7 +258,15 @@ uv run cgstem
 | Оцу + відкриття 3x3 | 0.203 | 14.7 | 1550 |
 | Оцу + закриття 3x3 | 0.640 | 5.7 | 6269 |
 
+Маска Оцу містить окремі гребені, тому кількість компонент велика. Відкриття
+прибирає тонкі структури разом із шумом, а закриття з'єднує сусідні гребені
+в суцільну область.
+
+![Рисунок 4.2. Маска Оцу та результати морфологічних операцій](img/mask_comparison.png){width=14cm}
+
 ### 4.4 Аналіз текстур
+
+**Таблиця 4.4. Середні властивості GLCM за групами**
 
 | Група | Контраст | Енергія | Гомогенність | Кореляція |
 |---|---|---|---|---|
@@ -267,9 +276,16 @@ uv run cgstem
 
 ### 4.5 Візуальне порівняння
 
-> TODO: додати рисунки до/після для одного реального і одного зміненого
-> знімка: оригінал, медіанний фільтр, гаусів фільтр, CLAHE; окремо маски
-> Оцу, відкриття та закриття.
+Діаграми на рисунках 4.3 і 4.4 узагальнюють кількісні результати. Рисунок 4.5
+показує поведінку методів на зміненому знімку: медіанний фільтр згладжує
+пошкоджену область, маска Оцу втрачає частину гребенів, а закриття заповнює
+розриви, але розширює передній план.
+
+![Рисунок 4.3. PSNR і SSIM для методів фільтрації](img/metrics_chart.png){width=16cm}
+
+![Рисунок 4.4. Показники бінарних масок](img/mask_chart.png){width=16cm}
+
+![Рисунок 4.5. Обробка зміненого знімка](img/altered_comparison.png){width=16cm}
 
 ### 4.6 Порівняння з суміжними підходами
 
@@ -352,18 +368,137 @@ GLCM показує, що змінені знімки `_Obl` мають нижч
 
 ## ДОДАТОК А. ЛІСТИНГ КЛЮЧОВИХ ФУНКЦІЙ
 
-Повний код програми: `src/cgstem`. Ключові функції:
+Повний код програми: каталог `src/cgstem`. Нижче наведено функції, які
+безпосередньо реалізують методи обробки.
 
-- `median_filter`, `gaussian_blur` - `src/cgstem/methods/filtering.py`;
-- `clahe` - `src/cgstem/methods/histogram.py`;
-- `otsu_threshold`, `otsu_mask` - `src/cgstem/methods/segmentation.py`;
-- `erode`, `dilate`, `opening`, `closing` - `src/cgstem/methods/morphology.py`;
-- `glcm_matrix`, `glcm_properties`, `glcm_features` -
-  `src/cgstem/methods/texture.py`;
-- `process_image`, `run_pipeline` - `src/cgstem/pipeline`.
+### А.1 Фільтрація
 
-> TODO: вставити повний лістинг ключових функцій або додати посилання
-> на Git-репозиторій із зафіксованим комітом.
+```python
+def median_filter(image: GrayImage, size: int = 3) -> GrayImage:
+    """Прибирає імпульсний шум медіаною у вікні заданого розміру."""
+    check_window(size)
+    pad = size // 2
+    padded = np.pad(image, pad, mode="reflect")
+    windows = sliding_window_view(padded, (size, size))
+    return np.median(windows, axis=(-2, -1)).astype(np.uint8)
+
+
+def gaussian_blur(image: GrayImage, size: int = 5,
+                  sigma: float = 1.0) -> GrayImage:
+    """Згладжує зображення гаусовим ядром."""
+    check_window(size)
+    if sigma <= 0:
+        raise ValueError(f"Сигма повинна бути додатною, отримано {sigma}")
+    kernel = gaussian_kernel(size, sigma)
+    smoothed = convolve2d(image.astype(np.float64), kernel)
+    return to_uint8(smoothed)
+```
+
+### А.2 CLAHE
+
+```python
+def clahe(image: GrayImage, clip_limit: float = 2.0,
+          grid: tuple[int, int] = (8, 8)) -> GrayImage:
+    """Вирівнює гістограму локально з обмеженням і білінійним змішуванням."""
+    check_params(image, clip_limit, grid)
+    rows, cols = actual_grid(image.shape, grid)
+    luts, row_edges, col_edges = build_luts(image, rows, cols, clip_limit)
+    result = interpolate(image, luts, row_edges, col_edges)
+    return np.clip(np.rint(result), 0, HIST_SIZE - 1).astype(np.uint8)
+
+
+def clip_histogram(hist: FloatImage, clip_limit: float) -> FloatImage:
+    """Обмежує висоту стовпців і розподіляє надлишок по решті кошиків."""
+    tile_size = hist.sum()
+    threshold = max(int(clip_limit * tile_size / HIST_SIZE), 1)
+    clipped = np.minimum(hist, threshold)
+    excess = int(hist.sum() - clipped.sum())
+    clipped += excess // HIST_SIZE
+    clipped[:excess % HIST_SIZE] += 1
+    return clipped
+```
+
+### А.3 Сегментація
+
+```python
+def otsu_threshold(image: GrayImage) -> int:
+    """Обчислює поріг Оцу, що максимізує міжкласову дисперсію."""
+    check_image(image)
+    hist = np.bincount(image.ravel(), minlength=HIST_SIZE).astype(np.float64)
+    levels = np.arange(HIST_SIZE, dtype=np.float64)
+    total = hist.sum()
+    weight_back = np.cumsum(hist)
+    weight_front = total - weight_back
+    sum_back = np.cumsum(hist * levels)
+    sum_front = sum_back[-1] - sum_back
+    valid = (weight_back > 0) & (weight_front > 0)
+    mean_back = np.divide(sum_back, weight_back, out=np.zeros_like(sum_back), where=valid)
+    mean_front = np.divide(sum_front, weight_front, out=np.zeros_like(sum_front), where=valid)
+    variance = weight_back * weight_front * (mean_back - mean_front) ** 2
+    variance = np.where(valid, variance, 0.0)
+    return int(np.argmax(variance))
+```
+
+### А.4 Морфологія
+
+```python
+def erode(mask: Mask, size: int = 3) -> Mask:
+    """Звужує маску: піксель лишається, коли все вікно належить масці."""
+    check_window(size)
+    windows = mask_windows(mask, size)
+    return np.all(windows, axis=(-2, -1))
+
+
+def dilate(mask: Mask, size: int = 3) -> Mask:
+    """Розширює маску: піксель додається, коли вікно зачіпає маску."""
+    check_window(size)
+    windows = mask_windows(mask, size)
+    return np.any(windows, axis=(-2, -1))
+
+
+def opening(mask: Mask, size: int = 3) -> Mask:
+    """Прибирає дрібні об'єкти: ерозія, потім дилатація."""
+    return dilate(erode(mask, size), size)
+
+
+def closing(mask: Mask, size: int = 3) -> Mask:
+    """Заповнює дрібні отвори: дилатація, потім ерозія."""
+    return erode(dilate(mask, size), size)
+```
+
+### А.5 GLCM
+
+```python
+def glcm_matrix(image: GrayImage, distance: int = 1,
+                angle: int = 0) -> FloatImage:
+    """Повертає нормовану матрицю суміжності для заданих відстані та кута."""
+    check_image(image)
+    if distance < 1:
+        raise ValueError(f"Відстань повинна бути додатною, отримано {distance}")
+    offset = angle_offset(angle, distance)
+    source, target = offset_slices(image, offset)
+    if source.size == 0:
+        raise ValueError(f"Відстань {distance} перевищує розміри зображення")
+    indices = source.astype(np.intp) * HIST_SIZE + target
+    counts = np.bincount(indices.ravel(), minlength=HIST_SIZE ** 2)
+    return counts.reshape(HIST_SIZE, HIST_SIZE) / counts.sum()
+```
+
+### А.6 Оркестрація пайплайна
+
+```python
+def process_image(image: GrayImage, config: dict) -> list[MethodResult]:
+    """Виконує всі вибрані стадії для одного знімка."""
+    results = filtering_results(image, config)
+    if "otsu" in config or "morphology" in config:
+        mask = otsu_mask(image)
+        if "otsu" in config:
+            results.append(segmentation_result(mask))
+        if "morphology" in config:
+            results.extend(morphology_results(mask, config))
+    results.extend(texture_results(image, config))
+    return results
+```
 
 ## ДОДАТОК Б. ІНСТРУКЦІЯ КОРИСТУВАЧА
 

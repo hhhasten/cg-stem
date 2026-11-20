@@ -115,3 +115,11 @@ uv run python scripts/check_dataset.py --manifest data/manifest.tsv
 - [Звіт](docs/report/report.md)
 - [Правила роботи над репозиторієм](AGENTS.md)
 - [Журнал використання генеративного ШІ](META-USAGE.md)
+
+Збірка звіту в DOCX:
+
+```
+uv run python scripts/build_report.py
+```
+
+Команда потребує Pandoc і попереднього прогону `uv run cgstem`.
